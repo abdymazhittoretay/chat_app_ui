@@ -9,6 +9,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _controller = TextEditingController();
+
   List<MessageModel> messages = [
     MessageModel(
         text: "Hey, how are you?",
@@ -58,6 +60,59 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+      ),
+      body: Column(
+        children: [
+          Expanded(child: Container()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: SafeArea(
+              child: Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                        hintText: "Type your message here",
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(40.0)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(40.0))),
+                  )),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(40.0)),
+                      child: IconButton(
+                          onPressed: () {
+                            if (_controller.text.isNotEmpty) {
+                              setState(() {
+                                messages.add(MessageModel(
+                                    text: _controller.text,
+                                    dateTime: DateTime.now(),
+                                    isSentByMe: true));
+                                _controller.clear();
+                              });
+                            }
+                          },
+                          icon: Icon(
+                            Icons.send,
+                            color: Colors.white,
+                          )))
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+        ],
       ),
     );
   }
