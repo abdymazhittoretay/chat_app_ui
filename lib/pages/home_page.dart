@@ -1,5 +1,6 @@
 import 'package:chat_app_ui/models/message_model.dart';
 import 'package:flutter/material.dart';
+import 'package:grouped_list/grouped_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -52,21 +53,60 @@ class _HomePageState extends State<HomePage> {
         text: "Nice! Good luck with the review.",
         dateTime: DateTime(2025, 1, 5, 11, 50),
         isSentByMe: false),
-  ];
+  ].reversed.toList();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          Expanded(child: Container()),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: SafeArea(
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+              child: GroupedListView<MessageModel, DateTime>(
+                reverse: true,
+                order: GroupedListOrder.DESC,
+                useStickyGroupSeparators: true,
+                floatingHeader: true,
+                elements: messages,
+                groupBy: (message) => DateTime(message.dateTime.year,
+                    message.dateTime.month, message.dateTime.day),
+                groupHeaderBuilder: (MessageModel message) => SizedBox(
+                  height: 50.0,
+                  child: Center(
+                    child: Card(
+                      color: Colors.blue,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${message.dateTime.day} ${message.dateTime.month} ${message.dateTime.year}",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                itemBuilder: (context, MessageModel message) {
+                  return Align(
+                    alignment: message.isSentByMe
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 5.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(message.text),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 children: [
                   Expanded(
@@ -99,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                                     isSentByMe: true));
                                 _controller.clear();
                               });
+                              FocusScope.of(context).unfocus();
                             }
                           },
                           icon: Icon(
@@ -108,11 +149,11 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-        ],
+            SizedBox(
+              height: 10.0,
+            ),
+          ],
+        ),
       ),
     );
   }
